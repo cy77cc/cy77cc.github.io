@@ -4,15 +4,33 @@
   <meta charset="utf-8">
   
   
-  <title>Hexo</title>
+  <title>golang学习笔记 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="https://cy77cc.github.io/index.html">
+  <meta name="description" content="Go语言基础知识go build指令将go源码文件编译成可执行文件(.exe) go run指令直接执行go文件 两种执行流程的方式区别  如果我们先编译成了可执行文件，那么我们可以将可执行文件拷贝到没有go开发环境的机器上，仍然可运行  如果我们直接go run go源码，那么如果要在另外一个机器上可以运行，也需要go开发环境，否则无法执行  在编译时，编译器会将程序运行依赖的库文件包含在可执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang学习笔记">
+<meta property="og:url" content="https://cy77cc.github.io/2025/03/19/Golang/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Go语言基础知识go build指令将go源码文件编译成可执行文件(.exe) go run指令直接执行go文件 两种执行流程的方式区别  如果我们先编译成了可执行文件，那么我们可以将可执行文件拷贝到没有go开发环境的机器上，仍然可运行  如果我们直接go run go源码，那么如果要在另外一个机器上可以运行，也需要go开发环境，否则无法执行  在编译时，编译器会将程序运行依赖的库文件包含在可执行">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2021/06/24/rJjBIvTEfZdKWbo.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/DHtszaAV562xMOJ.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/a857yg2CNxSr1e9.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/rKX3BkZNVgR5WCQ.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/16/I62uXoUZxvb3lh1.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/16/CmwaxKJ59QbPiHo.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/4X3VozykIDi8ZcE.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/WzkxapLtJHhTYfQ.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/nPiFGl2Lza39TsR.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/m8W49axkneizZcH.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/2nHKrzPTN7Sfo3s.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/78UdTRIN9qlfb5x.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/10/JakAWTjSwhnqcIz.png">
+<meta property="article:published_time" content="2025-03-19T06:12:11.000Z">
+<meta property="article:modified_time" content="2025-03-19T06:15:01.131Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/06/24/rJjBIvTEfZdKWbo.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -69,9 +87,7 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-Golang" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-Golang" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2025/03/19/Golang/" class="article-date">
   <time class="dt-published" datetime="2025-03-19T06:12:11.000Z" itemprop="datePublished">2025-03-19</time>
@@ -84,8 +100,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2025/03/19/Golang/">golang学习笔记</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      golang学习笔记
     </h1>
   
 
@@ -1861,49 +1877,19 @@ map[&quot;key&quot;] = value // 如果key还没有，就是增加，如果key存
     </footer>
   </div>
   
-</article>
-
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-my-first-blog" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2025/03/19/my-first-blog/" class="article-date">
-  <time class="dt-published" datetime="2025-03-19T06:12:11.000Z" itemprop="datePublished">2025-03-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2025/03/19/my-first-blog/">my-first-blog</a>
-    </h1>
+    <a href="/2025/03/19/my-first-blog/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">my-first-blog</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://cy77cc.github.io/2025/03/19/my-first-blog/" data-id="cm8fj4nie0001c8lz8farhua0" data-title="my-first-blog" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-
-  
 
 
 </section>
