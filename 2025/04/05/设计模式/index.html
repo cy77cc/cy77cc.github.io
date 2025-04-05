@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Go设计模式 | cy77cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="一、创建型设计模式1. 单例模式单例模式（Singleton Pattern）是一种常用的软件设计模式。单例模式的类提供了一种访问其唯一对象的方法，该对象可以直接被访问，无须实例化。单例模式保证了一个类的对象只存在一个，同时维护了一个对其对象的全局访问点。 1234567type type Singleton struct &#123;	Value int&#125;var instance *S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go设计模式">
+<meta property="og:url" content="https://cy77cc.github.io/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="cy77cc">
+<meta property="og:description" content="一、创建型设计模式1. 单例模式单例模式（Singleton Pattern）是一种常用的软件设计模式。单例模式的类提供了一种访问其唯一对象的方法，该对象可以直接被访问，无须实例化。单例模式保证了一个类的对象只存在一个，同时维护了一个对其对象的全局访问点。 1234567type type Singleton struct &#123;	Value int&#125;var instance *S">
+<meta property="og:locale">
+<meta property="article:published_time" content="2025-04-05T08:48:00.000Z">
+<meta property="article:modified_time" content="2025-04-05T09:12:10.034Z">
+<meta property="article:author" content="Mr. Zhang">
+<meta property="article:tag" content="go">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="cy77cc" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">cy77cc</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Suche"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Suche"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://cy77cc.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-设计模式" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time class="dt-published" datetime="2025-04-05T08:48:00.000Z" itemprop="datePublished">2025-04-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Go设计模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="一、创建型设计模式"><a href="#一、创建型设计模式" class="headerlink" title="一、创建型设计模式"></a>一、创建型设计模式</h2><h3 id="1-单例模式"><a href="#1-单例模式" class="headerlink" title="1. 单例模式"></a>1. 单例模式</h3><p>单例模式（Singleton Pattern）是一种常用的软件设计模式。单例模式的类提供了一种访问其唯一对象的方法，该对象可以直接被访问，无须实例化。单例模式保证了一个类的对象只存在一个，同时维护了一个对其对象的全局访问点。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="keyword">type</span> Singleton <span class="keyword">struct</span> &#123;</span><br><span class="line">	Value <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> instance *Singleton</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> mutex *sync.Mutex</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-1-懒汉式单例模式"><a href="#1-1-懒汉式单例模式" class="headerlink" title="1.1 懒汉式单例模式"></a>1.1 懒汉式单例模式</h4><p>懒汉式单例模式是指，在创建对象时，不直接创建对象，在加载配置文件时才创建对象。需要加锁保证并发安全。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">LazyGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	mutex.Lock()</span><br><span class="line">	<span class="keyword">defer</span> mutex.Unlock()</span><br><span class="line">	<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">		instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-饿汉式单例模式"><a href="#1-2-饿汉式单例模式" class="headerlink" title="1.2 饿汉式单例模式"></a>1.2 饿汉式单例模式</h4><p>在创建对象时，不判断创建的对象是否为空，直接创建对象。时并发安全的，唯一的缺点时在导入包的同时会创建对象，并且创建的对象会持续存在与内存中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 导入包时创建</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">		instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">		fmt.Println(<span class="string">&quot;创建单个实例&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">HungryGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-双重检查单例模式"><a href="#1-3-双重检查单例模式" class="headerlink" title="1.3 双重检查单例模式"></a>1.3 双重检查单例模式</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DoubleCheckGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">		mutex.Lock()</span><br><span class="line">		<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">			instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">			fmt.Println(<span class="string">&quot;创建单个实例&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		mutex.Unlock()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-sync-Once单例模式"><a href="#1-4-sync-Once单例模式" class="headerlink" title="1.4 sync.Once单例模式"></a>1.4 sync.Once单例模式</h4><p>init()函数会在包被首次加载的时候执行，如果被加载的包不立即使用，会浪费内存空间和程序加载时间。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> once sync.Once</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">OnceGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	once.Do(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">		fmt.Println(<span class="string">&quot;创建单个实例&quot;</span>)</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h4><ol>
+<li>优点<ul>
+<li>单例模式可以拓展为工厂模式</li>
+<li>对于需要频繁创建和销毁对象的系统，使用单例模式可以提升系统的性能。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>可拓展性差</li>
+<li>如果实例化的对象长时间没有被使用，会被GC，导致对象缺失。</li>
+</ul>
+</li>
+</ol>
+<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><h4 id="1-1-使用场景"><a href="#1-1-使用场景" class="headerlink" title="1.1 使用场景"></a>1.1 使用场景</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cy77cc.github.io/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" data-id="cm93zwe9b0000uklz81mc6pux" data-title="Go设计模式" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/go/" rel="tag">go</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/04/04/nginx/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">Nginx</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tool/" rel="tag">tool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/go/" style="font-size: 10px;">go</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/mq/" style="font-size: 10px;">mq</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/tool/" style="font-size: 10px;">tool</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 20px;">数据库</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">April 2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">March 2025</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">Go设计模式</a>
+          </li>
+        
+          <li>
+            <a href="/2025/04/04/nginx/">Nginx</a>
+          </li>
+        
+          <li>
+            <a href="/2025/04/04/Git/">Git</a>
+          </li>
+        
+          <li>
+            <a href="/2025/04/04/docker/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2025/04/04/RocketMQ/">RocketMQ</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 Mr. Zhang<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

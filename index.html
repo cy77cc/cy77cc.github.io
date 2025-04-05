@@ -71,6 +71,72 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-设计模式" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time class="dt-published" datetime="2025-04-05T08:48:00.000Z" itemprop="datePublished">2025-04-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">Go设计模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="一、创建型设计模式"><a href="#一、创建型设计模式" class="headerlink" title="一、创建型设计模式"></a>一、创建型设计模式</h2><h3 id="1-单例模式"><a href="#1-单例模式" class="headerlink" title="1. 单例模式"></a>1. 单例模式</h3><p>单例模式（Singleton Pattern）是一种常用的软件设计模式。单例模式的类提供了一种访问其唯一对象的方法，该对象可以直接被访问，无须实例化。单例模式保证了一个类的对象只存在一个，同时维护了一个对其对象的全局访问点。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="keyword">type</span> Singleton <span class="keyword">struct</span> &#123;</span><br><span class="line">	Value <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> instance *Singleton</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> mutex *sync.Mutex</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-1-懒汉式单例模式"><a href="#1-1-懒汉式单例模式" class="headerlink" title="1.1 懒汉式单例模式"></a>1.1 懒汉式单例模式</h4><p>懒汉式单例模式是指，在创建对象时，不直接创建对象，在加载配置文件时才创建对象。需要加锁保证并发安全。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">LazyGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	mutex.Lock()</span><br><span class="line">	<span class="keyword">defer</span> mutex.Unlock()</span><br><span class="line">	<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">		instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-饿汉式单例模式"><a href="#1-2-饿汉式单例模式" class="headerlink" title="1.2 饿汉式单例模式"></a>1.2 饿汉式单例模式</h4><p>在创建对象时，不判断创建的对象是否为空，直接创建对象。时并发安全的，唯一的缺点时在导入包的同时会创建对象，并且创建的对象会持续存在与内存中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 导入包时创建</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">		instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">		fmt.Println(<span class="string">&quot;创建单个实例&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">HungryGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-双重检查单例模式"><a href="#1-3-双重检查单例模式" class="headerlink" title="1.3 双重检查单例模式"></a>1.3 双重检查单例模式</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DoubleCheckGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">		mutex.Lock()</span><br><span class="line">		<span class="keyword">if</span> instance == <span class="literal">nil</span> &#123;</span><br><span class="line">			instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">			fmt.Println(<span class="string">&quot;创建单个实例&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		mutex.Unlock()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-sync-Once单例模式"><a href="#1-4-sync-Once单例模式" class="headerlink" title="1.4 sync.Once单例模式"></a>1.4 sync.Once单例模式</h4><p>init()函数会在包被首次加载的时候执行，如果被加载的包不立即使用，会浪费内存空间和程序加载时间。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> once sync.Once</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">OnceGetInstance</span><span class="params">()</span></span> *Singleton &#123;</span><br><span class="line">	once.Do(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		instance = <span class="built_in">new</span>(Singleton)</span><br><span class="line">		fmt.Println(<span class="string">&quot;创建单个实例&quot;</span>)</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">return</span> instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h4><ol>
+<li>优点<ul>
+<li>单例模式可以拓展为工厂模式</li>
+<li>对于需要频繁创建和销毁对象的系统，使用单例模式可以提升系统的性能。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>可拓展性差</li>
+<li>如果实例化的对象长时间没有被使用，会被GC，导致对象缺失。</li>
+</ul>
+</li>
+</ol>
+<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><h4 id="1-1-使用场景"><a href="#1-1-使用场景" class="headerlink" title="1.1 使用场景"></a>1.1 使用场景</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cy77cc.github.io/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" data-id="cm93zwe9b0000uklz81mc6pux" data-title="Go设计模式" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/go/" rel="tag">go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-nginx" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2025/04/04/nginx/" class="article-date">
@@ -839,117 +905,6 @@
 
 
   
-    <article id="post-分布式事务" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2025/03/20/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="article-date">
-  <time class="dt-published" datetime="2025-03-20T11:12:11.000Z" itemprop="datePublished">2025-03-20</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2025/03/20/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">分布式事务是什么</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="分布式事务学习笔记"><a href="#分布式事务学习笔记" class="headerlink" title="分布式事务学习笔记"></a>分布式事务学习笔记</h1><p>分布式事务就和名字一样是在分布式的情况下需要考虑的。</p>
-<h2 id="一、MySQL的事务"><a href="#一、MySQL的事务" class="headerlink" title="一、MySQL的事务"></a>一、MySQL的事务</h2><p>把多条语句作为一个整体进行操作的功能，被称为数据库事务。数据库事务可以确保该事务范围内的所有操作都可以全部成功或者全部失败。</p>
-<p>MySQL事务支持ACID，原子性，持久性，一致性，隔离行四个特性，其中原子性能保证事务内所有执行都完整完成，不存在部分完成的情况，一致性指事务执行前后不会改变数据库的状态，持久性指能够一直保存（简单地说就是保存在磁盘上不会丢，除非你把磁盘烧了），隔离性指每个事务之间不会相互影响。</p>
-<h2 id="二、分布式理论"><a href="#二、分布式理论" class="headerlink" title="二、分布式理论"></a>二、分布式理论</h2><h3 id="2-1-CAP理论"><a href="#2-1-CAP理论" class="headerlink" title="2.1 CAP理论"></a>2.1 CAP理论</h3><p>C（一致性）指的是分布式系统中从多副本读取数据时的一致性。分强一致性、弱一致性和最终一致性。</p>
-<p>A（可用性）保证每个请求不管成功或者失败都有响应。</p>
-<p>P（分区容错性）分区容忍性是分布式系统中必须实现的（高可用），一个节点挂了不能导致服务也挂了。</p>
-<p>不存在CAP都满足的，最多CP+HA  高可用。</p>
-<h3 id="2-2-BASE理论"><a href="#2-2-BASE理论" class="headerlink" title="2.2 BASE理论"></a>2.2 BASE理论</h3><p>Basically Available(基本可用)</p>
-<p>Soft state（软状态）</p>
-<p>Eventually consistent（最终一致性）</p>
-<h2 id="三、分布式事务"><a href="#三、分布式事务" class="headerlink" title="三、分布式事务"></a>三、分布式事务</h2><p>分布式事务指事务的发起者、资源及资源管理器和事务协调者分别位于分布式系统的不同节点之上（同时写、修改多个数据库），微服务里面是一个操作需要同时修改不同服务内的数据，例如一个订单的微服务在创建时需要减掉相应商品的库存，这时候如果先创建订单，然后再减掉商品库存就会导致常见的超卖现象。还有一种情况可能是，订单创建了，商品这个微服务挂了，然后库存没减掉。这些现象在分布式的情况中需要注意。</p>
-<h3 id="3-1-两阶段提交-XA"><a href="#3-1-两阶段提交-XA" class="headerlink" title="3.1 两阶段提交&#x2F;XA"></a>3.1 两阶段提交&#x2F;XA</h3><p>XA是由X&#x2F;Open组织提出的分布式事务的规范，XA规范主要定义了(全局)事务管理器(TM)和(局部)资源管理器(RM)之间的接口。本地的数据库如mysql在XA中扮演的是RM角色</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">xa start &#x27;xxx&#x27;</span><br><span class="line">CRUD</span><br><span class="line">xa end &#x27;xxx&#x27;</span><br><span class="line">xa prepare &#x27;xxx&#x27;   # 如果这个数据库和全局事务管理器断开了就会自动回滚</span><br><span class="line">xa commit &#x27;xxx&#x27; # 所有参与者都完成了prepare，就进入提交</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://dtm.pub/assets/xa_normal.5a0ce600.jpg" alt="图片来源DTM（https:&#x2F;&#x2F;dtm.pub&#x2F;）"></p>
-<p>XA一共分为两个阶段：</p>
-<p>第一阶段准备：所有的参与者RM准备执行事务并锁住需要的资源。参与者ready时，向TM报告已准备就绪。</p>
-<p>第二阶段（commit&#x2F;rollback）：当TM确认所有参与RM都ready后，向所有参与RM发送commit命令。</p>
-<p>XA事务的特点是：</p>
-<ul>
-<li>简单易理解，开发较容易。</li>
-<li>对资源进行长时间的锁定，影响系统的并发。</li>
-</ul>
-<h3 id="3-2-SAGA"><a href="#3-2-SAGA" class="headerlink" title="3.2 SAGA"></a>3.2 SAGA</h3><p>核心思想是将长事务拆分为多个本地事务，由Saga事务协调器协调，如果正常结束那就正常完成，如果某个步骤失败，则根据相反顺序一次调用补偿操作（类似undo log）</p>
-<p><img src="https://dtm.pub/assets/saga_normal.a2849672.jpg" alt="图片来源DTM（https:&#x2F;&#x2F;dtm.pub&#x2F;）"></p>
-<p><strong>Saga事务的特点：</strong></p>
-<ul>
-<li>并发度高，不用像XA事务一样长时间锁住资源。</li>
-<li>需要定义正常操作以及补偿操作，开发量更大了（写undo log，double的业务逻辑）。</li>
-<li>一致性较弱，对于转账，可能发生用户A已扣款，最后转账又失败的情况。</li>
-</ul>
-<h3 id="3-3-TCC"><a href="#3-3-TCC" class="headerlink" title="3.3 TCC"></a>3.3 TCC</h3><p>TCC(Try-Confirm-Cancel)，TCC分为3个阶段：</p>
-<ul>
-<li>Try阶段：尝试执行，完成所有业务检查（一致性），预留必须的业务资源（准隔离性）。</li>
-<li>Confirm阶段：确认执行真正执行业务，不作任何业务检查，只是用Try阶段预留的业务资源，Confirm操作要求具备幂等设计，Confirm失败后需要进行重试。</li>
-<li>Cancel阶段：取消执行，释放Try阶段预留的业务资源。Cancel阶段的异常和Confirm阶段异常处理方案基本一致，要求满足幂等设计。</li>
-</ul>
-<p><img src="https://dtm.pub/assets/tcc_normal.dea14fb3.jpg" alt="图片来源DTM（https:&#x2F;&#x2F;dtm.pub&#x2F;）"></p>
-<p>TCC的Confirm&#x2F;Cancel阶段在业务逻辑上是不允许返回失败的，如果因为网络或者其他临时故障，导致不能返回成功，TM会不断的重试，直到Confirm&#x2F;Cancel返回成功。</p>
-<p>TCC特点如下：</p>
-<ul>
-<li>并发度高，无长期资源锁定。</li>
-<li>开发量较大，需要提供Try、Confirm、Cancel接口。</li>
-<li>一致性较好，不会发生SAGA已扣款最后有家转账失败的情况。</li>
-<li>TCC适用于订单类业务，对中间状态有约束的业务。</li>
-</ul>
-<h3 id="3-4-本地消息表"><a href="#3-4-本地消息表" class="headerlink" title="3.4 本地消息表"></a>3.4 本地消息表</h3><p><img src="https://dtm.pub/assets/local_msg_table.089f1fd3.jpg" alt="图片来源DTM（https:&#x2F;&#x2F;dtm.pub&#x2F;）"></p>
-<p>写本地消息和业务操作放在一个事务里，保证了业务和发消息的原子性，要么他们全都成功，要么全都失败。</p>
-<p>容错机制：</p>
-<ul>
-<li>扣减余额失败时，事务直接回滚，无后续步骤。</li>
-<li>轮询生成消息失败，增加余额事务失败都会进行重试。</li>
-</ul>
-<p>本地消息表的特点：</p>
-<ul>
-<li>长事务仅需分成多个任务，使用简单。</li>
-<li>生产者需要额外的创建消息表。</li>
-<li>不支持回滚。</li>
-<li>轮询生产消息难实现，如果定时轮询会延长事务总时长，如果订阅binlog则开发维护困难。</li>
-</ul>
-<h3 id="3-5-事务消息"><a href="#3-5-事务消息" class="headerlink" title="3.5 事务消息"></a>3.5 事务消息</h3><p>事务消息发送及提交：</p>
-<ul>
-<li>发送消息（half消息）。</li>
-<li>服务端存储消息，并响应消息写入结果。</li>
-<li>根据发送结果执行本地事务（如果写入失败，此时half消息对业务不可见，本地逻辑不执行）。</li>
-<li>根据本地事务状态执行Commit或者Rollback（Commit操作发布消息，消息对消费者可见）。</li>
-</ul>
-<p>​	</p>
-<h3 id="3-6-最大努力通知"><a href="#3-6-最大努力通知" class="headerlink" title="3.6 最大努力通知"></a>3.6 最大努力通知</h3><p>最大努力通知适用于业务通知类型，例如微信交易的结果，就是通过最大努力通知方式通知各个商户，既有回调通知，也有交易查询接口。</p>
-<h3 id="3-7-AT事务模型"><a href="#3-7-AT事务模型" class="headerlink" title="3.7 AT事务模型"></a>3.7 AT事务模型</h3><p>优点是该事务模式使用方式，类似XA模式，业务无需编写各类补偿操作，回滚由框架自动完成，该模式缺点也较多，一方面类似XA，存在较长时间的锁，不满足高并发的场景；另一方面存在脏回滚之类的问题，容易引发数据不一致。</p>
-<h2 id="四、分布式事务的新方案"><a href="#四、分布式事务的新方案" class="headerlink" title="四、分布式事务的新方案"></a>四、分布式事务的新方案</h2><h3 id="二阶段消息-DTM"><a href="#二阶段消息-DTM" class="headerlink" title="二阶段消息(DTM)"></a>二阶段消息(DTM)</h3><p><img src="https://segmentfault.com/img/bVcXBhX/view" alt="图片来源DTM（https:&#x2F;&#x2F;dtm.pub&#x2F;）"></p>
-<h2 id="五、异常处理"><a href="#五、异常处理" class="headerlink" title="五、异常处理"></a>五、异常处理</h2>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://cy77cc.github.io/2025/03/20/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" data-id="cm8ha8omz0000u8lz2g75blj1" data-title="分布式事务是什么" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -968,7 +923,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tool/" rel="tag">tool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tool/" rel="tag">tool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
     </div>
   </div>
 
@@ -978,7 +933,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/mq/" style="font-size: 10px;">mq</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/tool/" style="font-size: 10px;">tool</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 20px;">数据库</a>
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/go/" style="font-size: 10px;">go</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/mq/" style="font-size: 10px;">mq</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/tool/" style="font-size: 10px;">tool</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 20px;">数据库</a>
     </div>
   </div>
 
@@ -1000,6 +955,10 @@
       <ul>
         
           <li>
+            <a href="/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">Go设计模式</a>
+          </li>
+        
+          <li>
             <a href="/2025/04/04/nginx/">Nginx</a>
           </li>
         
@@ -1013,10 +972,6 @@
         
           <li>
             <a href="/2025/04/04/RocketMQ/">RocketMQ</a>
-          </li>
-        
-          <li>
-            <a href="/2025/03/28/Kubernetes%EF%BC%88k8s%EF%BC%89/">(no title)</a>
           </li>
         
       </ul>
