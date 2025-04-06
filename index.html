@@ -71,6 +71,77 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Kubernetes（k8s）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/04/06/Kubernetes%EF%BC%88k8s%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2025-04-06T01:21:00.000Z" itemprop="datePublished">2025-04-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/04/06/Kubernetes%EF%BC%88k8s%EF%BC%89/">k8s学习记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>有状态和无状态</p>
+<ul>
+<li>会保存数据的是有状态</li>
+<li>不保存数据的是无状态</li>
+</ul>
+<h2 id="一、环境准备"><a href="#一、环境准备" class="headerlink" title="一、环境准备"></a>一、环境准备</h2><p>3台虚拟机，至少是2C2G，互相能ping通</p>
+<h3 id="1-1-下载RockyLinux9"><a href="#1-1-下载RockyLinux9" class="headerlink" title="1.1 下载RockyLinux9"></a>1.1 下载RockyLinux9</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://rockylinux.org/download</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-环境初始化"><a href="#1-2-环境初始化" class="headerlink" title="1.2 环境初始化"></a>1.2 环境初始化</h3><p>三个node的配置差不多，ip地址换一下就行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">网卡配置</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> /etc/NetworkManager/system-connections/ens160.nmconnection</span></span><br><span class="line">[ipv4]</span><br><span class="line">address1=192.168.66.11/24</span><br><span class="line">method=manual</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">调用 nmcli 重启设备和连接配置</span></span><br><span class="line">nmcli d d ens192</span><br><span class="line">nmcli d r ens160 </span><br><span class="line">nmcli c r ens160</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更换yum源</span></span><br><span class="line">sed -e &#x27;s|^mirrorlist=|#mirrorlist=|g&#x27; \</span><br><span class="line">    -e &#x27;s|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.aliyun.com/rockylinux|g&#x27; \</span><br><span class="line">    -i.bak \</span><br><span class="line">    /etc/yum.repos.d/Rocky-*.repo</span><br><span class="line"></span><br><span class="line">dnf makecache</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">防火墙修改 firewalld 为 iptables</span></span><br><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable firewalld</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选</span></span><br><span class="line">yum -y install iptables-services</span><br><span class="line">systemctl start iptables</span><br><span class="line">iptables -F</span><br><span class="line">systemctl enable iptables</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">禁用 Selinux</span></span><br><span class="line">setenforce 0</span><br><span class="line">sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/selinux/config</span><br><span class="line">grubby --update-kernel ALL --args selinux=0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置时区</span></span><br><span class="line">timedatectl set-timezone Asia/Shanghai</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">关闭 swap 分区</span></span><br><span class="line">swapoff -a</span><br><span class="line">sed -i &#x27;s:/dev/mapper/rl-swap:#/dev/mapper/rl-swap:g&#x27; /etc/fstab</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改主机名</span></span><br><span class="line">hostnamectl  set-hostname k8s-node01</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装 ipvs</span></span><br><span class="line">yum install -y ipvsadm</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">开启路由转发</span></span><br><span class="line">echo &#x27;net.ipv4.ip_forward=1&#x27; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">加载 bridge</span></span><br><span class="line">yum install -y epel-release</span><br><span class="line">yum install -y bridge-utils</span><br><span class="line"></span><br><span class="line">modprobe br_netfilter</span><br><span class="line">echo &#x27;br_netfilter&#x27; &gt;&gt; /etc/modules-load.d/bridge.conf</span><br><span class="line">echo &#x27;net.bridge.bridge-nf-call-iptables=1&#x27; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">echo &#x27;net.bridge.bridge-nf-call-ip6tables=1&#x27; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-安装docker"><a href="#1-3-安装docker" class="headerlink" title="1.3 安装docker"></a>1.3 安装docker</h3><p>k8s也不一定要用docker作为容器运行时，可以直接使用containerd，k8s好像默认的也是containerd，使用docker作为容器运行起还需要安装cir-dockerd。参考链接 <a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/rhel/">https://docs.docker.com/engine/install/rhel/</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">移除旧版本</span></span><br><span class="line">sudo dnf remove docker \</span><br><span class="line">                  docker-client \</span><br><span class="line">                  docker-client-latest \</span><br><span class="line">                  docker-common \</span><br><span class="line">                  docker-latest \</span><br><span class="line">                  docker-latest-logrotate \</span><br><span class="line">                  docker-logrotate \</span><br><span class="line">                  docker-engine \</span><br><span class="line">                  podman \</span><br><span class="line">                  runc</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加仓库</span>                  </span><br><span class="line">sudo dnf -y install dnf-plugins-core</span><br><span class="line">sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载最新版本的docker</span></span><br><span class="line">sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置开启自启动</span></span><br><span class="line">sudo systemctl enable --now docker</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">这里还需要配置docker的镜像，阿里云的镜像加速已经没用了，需要另外找</span></span><br><span class="line">sudo mkdir -p /etc/docker</span><br><span class="line">sudo tee /etc/docker/daemon.json &lt;&lt;-&#x27;EOF&#x27;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;: [&quot;https://xxxx.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-安装cri-dockerd"><a href="#1-4-安装cri-dockerd" class="headerlink" title="1.4 安装cri-dockerd"></a>1.4 安装cri-dockerd</h3><p>docker之前的运行时在k8s v1.24移除了，所以现在要额外安装cri-dockerd才能用docker作为k8s的容器运行时。参考链接（<a target="_blank" rel="noopener" href="https://mirantis.github.io/cri-dockerd/usage/install-manually/%EF%BC%89">https://mirantis.github.io/cri-dockerd/usage/install-manually/）</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在github下载cri-dockerd</span></span><br><span class="line">wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.17/cri-dockerd-0.3.17.amd64.tgz</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解压</span></span><br><span class="line">tar -zxvf cri-dockerd-0.3.17.amd64.tgz</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装</span></span><br><span class="line">install -o root -g root -m 0755 cri-dockerd 解压的cri-dcokerd路径/bin/cri-dockerd</span><br><span class="line">install packaging/systemd/* /etc/systemd/system</span><br><span class="line">sed -i -e &#x27;s,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,&#x27; /etc/systemd/system/cri-docker.service</span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl enable --now cri-docker.socket</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果要在k8s中使用添加一些配置</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">需要追加--network-plugin=cni，通过该配置告诉容器，使用kubernetes的网络接口</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">覆盖沙盒 (pause) 镜像，正常情况下，国内你是拉取不到k8s.gcr.io/pause:3.8镜像的，可以换成国内的registry.aliyuncs.com/google_containers/pause:3.10，这个镜像是一切的 Pod 的基础，要么自己手动导入进来，要么改成国内的镜像，通过设置以下配置来覆盖默认的沙盒镜像</span></span><br><span class="line">ExecStart=/usr/bin/cri-dockerd --container-runtime-endpoint fd:// --network-plugin=cni --pod-infra-container-image=registry.aliyuncs.com/google_containers/pause:3.10</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重新启动cri-dockers服务</span></span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl enable cri-docker.service</span><br><span class="line">systemctl enable --now cri-docker.socket</span><br><span class="line">systemctl restart cri-dockerd</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-安装kubernetes"><a href="#1-5-安装kubernetes" class="headerlink" title="1.5 安装kubernetes"></a>1.5 安装kubernetes</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">此操作会覆盖 /etc/yum.repos.d/kubernetes.repo 中现存的所有配置</span></span><br><span class="line">cat &lt;&lt;EOF | sudo tee /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key</span><br><span class="line">exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装软件</span></span><br><span class="line">sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes</span><br><span class="line">sudo systemctl enable --now kubelet</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-6-搭建集群"><a href="#1-6-搭建集群" class="headerlink" title="1.6 搭建集群"></a>1.6 搭建集群</h3><p>上面的操作需要在三个节点都执行一遍，也可以执行完后克隆虚拟机，修改ip地址</p>
+<h4 id="1-6-1-修改三个虚拟机的hostname"><a href="#1-6-1-修改三个虚拟机的hostname" class="headerlink" title="1.6.1 修改三个虚拟机的hostname"></a>1.6.1 修改三个虚拟机的hostname</h4><p>修改节点的hostname，这样就可以直接知识honstname访问node，添加到host</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分别在不同虚拟机执行</span></span><br><span class="line">hostnamectl  set-hostname k8s-node1</span><br><span class="line">hostnamectl  set-hostname k8s-master</span><br><span class="line">hostnamectl  set-hostname k8s-node2</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加到host文件</span></span><br><span class="line">vim /etc/hosts</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加解析</span></span><br><span class="line">192.168.66.11 k8s-master</span><br><span class="line">192.168.66.22 k8s-node1</span><br><span class="line">192.168.66.33 k8s-node2</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-6-2-初始化主节点"><a href="#1-6-2-初始化主节点" class="headerlink" title="1.6.2 初始化主节点"></a>1.6.2 初始化主节点</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init </span><br><span class="line">--apiserver-advertise-address=192.168.66.11    # apiserver地址</span><br><span class="line">--image-repository registry.aliyuncs.com/google_containers # 镜像仓库</span><br><span class="line">--kubernetes-version 1.32.3 # k8s的版本，使用kubectl version 查看，要和自己的版本对应 </span><br><span class="line">--service-cidr=10.10.0.0/12 </span><br><span class="line">--pod-network-cidr=10.244.0.0/16 # pod的地址</span><br><span class="line">--ignore-preflight-errors=all </span><br><span class="line">--cri-socket unix:///var/run/cri-dockerd.sock # 使用docker作为容器运行时，如果使用containerd可以不加</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">上面命令执行完后会提示执行三条命令，已经从节点怎么加入集群的命令，记得注意结尾的命令</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-6-3-从节点加入集群"><a href="#1-6-3-从节点加入集群" class="headerlink" title="1.6.3 从节点加入集群"></a>1.6.3 从节点加入集群</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">这里的token是在上面初始化主节点后输出的，拷贝过来，添加cri-dockerd的socket套接字执行</span></span><br><span class="line">kubeadm join 192.168.10.11:6443 --token a6xh07.yg9wh2vru2grluwb         --discovery-token-ca-cert-hash sha256:7cd8499abae48c8403800152cc0f655ac704ea00ae30a549acd9bbac7b26dca4 --cri-socket unix:///var/run/cri-dockerd.sock</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-7-部署网络插件"><a href="#1-7-部署网络插件" class="headerlink" title="1.7 部署网络插件"></a>1.7 部署网络插件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载配置文件</span></span><br><span class="line">curl https://raw.githubusercontent.com/projectcalico/calico/v3.29.3/manifests/calico.yaml -O</span><br><span class="line"></span><br><span class="line">vim calico.yaml</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改ipv4的地址为上面初始化主节点时的pod地址</span></span><br><span class="line">- name: CALICO_IPV4POOL_CIDR</span><br><span class="line">  value: &quot;10.244.0.0/16&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改为 BGP 模式</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enable IPIP</span></span><br><span class="line">- name: CALICO_IPV4POOL_IPIP</span><br><span class="line">  value: &quot;Always&quot;  #改成Off</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">把配置文件里面的所有docker.io都删除，不然下载不到容器</span></span><br><span class="line">sed -i &#x27;s|docker.io/||g&#x27; calico.yaml</span><br><span class="line"></span><br><span class="line">kubectl apply -f calico.yaml  #等待容器安装完成即可</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-8-修改kube-proxy模式为ipvs"><a href="#1-8-修改kube-proxy模式为ipvs" class="headerlink" title="1.8 修改kube-proxy模式为ipvs"></a>1.8 修改kube-proxy模式为ipvs</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl edit configmap kube-proxy -n kube-system</span></span><br><span class="line">mode: ipvs</span><br><span class="line"></span><br><span class="line">kubectl delete pod -n kube-system -l k8s-app=kube-proxy</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cy77cc.github.io/2025/04/06/Kubernetes%EF%BC%88k8s%EF%BC%89/" data-id="cm8wiyf4t0000qslza6gj3g58" data-title="k8s学习记录" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6-docker-kubernetes/" rel="tag">中间件,docker,kubernetes</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-设计模式" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="article-date">
@@ -316,39 +387,6 @@
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mq/" rel="tag">mq</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-Kubernetes（k8s）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2025/03/28/Kubernetes%EF%BC%88k8s%EF%BC%89/" class="article-date">
-  <time class="dt-published" datetime="2025-03-28T07:26:43.060Z" itemprop="datePublished">2025-03-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>有状态和无状态</p>
-<ul>
-<li>会保存数据的是有状态</li>
-<li>不保存数据的是无状态</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://cy77cc.github.io/2025/03/28/Kubernetes%EF%BC%88k8s%EF%BC%89/" data-id="cm8wiyf4t0000qslza6gj3g58" data-title="" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
     </footer>
   </div>
   
@@ -923,7 +961,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tool/" rel="tag">tool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tool/" rel="tag">tool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6-docker-kubernetes/" rel="tag">中间件,docker,kubernetes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul>
     </div>
   </div>
 
@@ -933,7 +971,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/go/" style="font-size: 10px;">go</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/mq/" style="font-size: 10px;">mq</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/tool/" style="font-size: 10px;">tool</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 20px;">数据库</a>
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/go/" style="font-size: 10px;">go</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/mq/" style="font-size: 10px;">mq</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/tool/" style="font-size: 10px;">tool</a> <a href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6-docker-kubernetes/" style="font-size: 10px;">中间件,docker,kubernetes</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 20px;">数据库</a>
     </div>
   </div>
 
@@ -955,6 +993,10 @@
       <ul>
         
           <li>
+            <a href="/2025/04/06/Kubernetes%EF%BC%88k8s%EF%BC%89/">k8s学习记录</a>
+          </li>
+        
+          <li>
             <a href="/2025/04/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">Go设计模式</a>
           </li>
         
@@ -968,10 +1010,6 @@
         
           <li>
             <a href="/2025/04/04/docker/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2025/04/04/RocketMQ/">RocketMQ</a>
           </li>
         
       </ul>
